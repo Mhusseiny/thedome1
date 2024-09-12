@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h1>إضافة محتوى جديد</h1>
+    <form action="{{ url_for('add_content') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="item_type">نوع المحتوى:</label>
+            <select id="item_type" name="item_type" required>
+                <option value="studies">دراسة</option>
+                <option value="news">خبر</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="title">عنوان المحتوى:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+
+        <div class="form-group">
+            <label for="image">صورة المحتوى:</label>
+            <input type="file" id="image" name="image">
+        </div>
+
+        <div class="form-group">
+            <label for="description">وصف المحتوى:</label>
+            <input type="text" id="description" name="description" required>
+        </div>
+
+        <div class="form-group">
+            <label for="link">رابط المحتوى (بدون الامتداد .html):</label>
+            <input type="text" id="link" name="link" required>
+        </div>
+
+        <div class="form-group">
+            <label for="content">النص الكامل للمحتوى:</label>
+            <textarea id="content" name="content" rows="10" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-add">نشر المحتوى</button>
+    </form>
+</div>
+{% endblock %}

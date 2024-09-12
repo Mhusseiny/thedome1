@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="manage-page">
+<div class="container">
+    <h1>تعديل المحتوى</h1>
+    <form action="{{ url_for('saveedit_content', item_id=request.args.get('articleid')) }}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="item_type">نوع المحتوى:</label>
+            <select id="item_type" name="item_type" required>
+                <option value="1" {% if aType == 1 %}selected{% endif %}>أحدث الأبحاث والدراسات</option>
+                <option value="2" {% if aType == 2 %}selected{% endif %}>الأخبار والفعاليات</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="item_status" class="w39p">Status :</label>
+            <select id="item_status" name="item_status" required>
+                <option value="1" {% if aStatus == 1 %}selected{% endif %}>Published</option>
+                <option value="2" {% if aStatus == 2 %}selected{% endif %}>Archived</option>
+                <option value="3" {% if aStatus == 3 %}selected{% endif %}>Un-Publish</option>                
+            </select>
+        
+            <label for="articleDate" class="txtCenter">Date:</label>
+            <input type="text" id="articleDate" name="articleDate" value="{{ posted_date }}" onkeypress="return false;" required/>
+            <input id='hfDate' type="hidden" class="hfSelDate"/>
+            <input id='articleID' type="hidden" name="articleID" value="{{ articleid }}"/>
+        </div>
+
+        <div class="form-group">
+            <label for="title">عنوان المحتوى:</label>
+            <input type="text" id="title" name="title" value="{{ title }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="image">صور المحتوى:</label>
+            <input type="file" id="images" name="images" multiple>
+        </div>
+
+        <div class="form-group">
+            <label for="image">Images</label>
+            <div class="content-item edit-images-show">
+            {% for image in image_filename %}
+            <img src="/static/images/{{ image }}"/>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="image">معرف اليوتيوب</label>
+            <input type="text" id="youtubes" name="youtubes" value="{{ youtubes }}"  class="engilshTxt"/>
+        </div>
+
+        <i class="hintbox">youtube id,id,...</i>
+        <div class="form-group">
+            <label for="description">وصف المحتوى:</label>                
+            <textarea id="description" name="description" rows="2" >{{ description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="content">النص الكامل للمحتوى:</label>
+            <textarea id="content" name="content" rows="10" >{{ content_text }}</textarea>
+        </div>
+        <button type="submit" class="btn btn-add">Update</button>
+    </form>
+</div>
+</div>
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery1.12.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery-migrate-1.3.0.min.js') }}"></script>
+ 
+    <!-- TinyMce WYSIWG editor -->
+    <script src="{{ url_for('static', filename='tinymce_4_5_7/jquery.tinymce.min.js') }}"></script>
+    <script type="text/javascript">
+        //* TinyMce
+        gebo_wysiwg = {
+            init: function () {
+                $('textarea#content').tinymce({
+                    body_class: 'bodyTiny',
+                    // Location of TinyMCE script
+                    script_url: '/static/tinymce_4_5_7/tinymce.min.js',
+                    verify_html: false,
+                    valid_children: "+a[div|h1|h2|h3|h4|h5|h6|p|#text]",
+                    force_br_newlines: true,
+                    force_p_newlines: false,
+                    forced_root_block: false,
+                    // General options
+                    //theme: "modern",
+                    //plugins: "autoresize,table,image,link,emoticons,preview,media,contextmenu,paste,fullscreen,noneditable,template,advlist",                   
+                    plugins: [" autoresize advlist autolink autosave link image lists charmap template  hr anchor pagebreak ", "searchreplace  visualblocks  code   media nonbreaking", "table directionality  template textcolor paste  textcolor  textpattern image"],
+
+                    style_formats: [{
+                        title: 'Bold text',
+                        inline: 'span',
+                        classes: 'bold'
+                    }, {
+                        title: 'Red text',
+                        inline: 'span',
+                        classes: 'redColor'
+                    }, {
+                        title: 'Blue text',
+                        inline: 'span',
+                        classes: 'blueColor'
+                    }, {
+                        title: 'h2 header',
+                        inline: 'span',
+                        classes: 'titleone'
+                    }, {
+                        title: 'h3 header',
+                        inline: 'span',
+                        classes: 'titletwo'
+                    }],
+                    templates: [
+                           { title: 'Select a Template', description: '', content: '' },
+                           { title: 'Bullet', description: 'Bullet', content: '<ul class="bullet"><li>ادخل النص هنا</li></ul>' }
+                    ],
+                    content_css: "/static/Tinymcearticle.css"
+                  , toolbar1: "  |  template | styleselect | paste |  link unlink | code | image",
+                    menubar: false,
+                    toolbar_items_size: 'small'
+                    
+
+                });
+            }
+        };
+
+        $(document).ready(function () {
+            gebo_wysiwg.init();
+           
+        });
+    </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-ui.js') }}"></script>
+    <script type="text/javascript">
+    $("#articleDate").datepicker({
+        disableTouchKeyboard: true,
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "yy-mm-dd",
+        onSelect: function (dateText, t) {
+            $(this).datepicker("getDate");
+            $('#hfDate').val(dateText);
+            var valselect = $('#hfDate').val();
+            var valselectt = dateText;
+            valselectt = valselectt.replace(/-/g, '/');
+        },
+        autoclose: !0
+    });
+</script>
+{% endblock %}

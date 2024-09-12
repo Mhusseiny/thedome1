@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>الأرشيف</h1>
+<section class="zone-1">
+    <h2>الدراسات المؤرشفة</h2>
+    <div class="research-subsections archive-box">
+
+            {% for articles in content.archive_articlesType1 %}
+                <div class="subsection">
+                    {% if articles.image %}
+                    <!-- Handle image cases -->
+                    {% if articles.image is string %}
+                        <!-- Single image as string -->
+                        <a href="/article/{{ articles.id }}">
+                            <img src="/static/images/{{ articles.image }}" class="article-image"/>
+                        </a>
+                    {% elif articles.image is iterable and articles.image|length > 0 %}
+                        <!-- Multiple images, take the first one -->
+                        <a href="/article/{{ articles.id }}">
+                            <img src="/static/images/{{ articles.image[0] }}" class="article-image"/>
+                        </a>
+                    {% endif %}
+                    {% elif articles.youtubes %}
+                        <!-- Handle YouTube videos -->
+                        {% set youtube_ids = articles.youtubes.split(',') %}
+                        {% if youtube_ids|length > 0 %}
+                            <a href="/article/{{ articles.id }}" class="img-youtube">
+                                <img src="https://img.youtube.com/vi/{{ youtube_ids[0] }}/0.jpg" class="article-image"/>
+                            </a>
+                        {% endif %}
+                    {% else %}            
+                    <!-- Display default image if no images or YouTube videos are available -->
+                    <a href="/article/{{ articles.id }}">
+                        <img src="/static/images/default-image.jpg" class="article-image"/>
+                    </a>
+                    {% endif %}
+                    <a href="/article/{{articles.id }}">
+                       <h3 class="archive-title">{{ articles.title }}</h3>
+                    </a>
+                    <div class="archive-date">{{ articles.posted_date }}</div>
+                </div>
+            {% endfor %}
+        <!--<div class="pagination">
+            <a class="active" href="">1</a>
+            <a href="">2</a>
+            <a href="">3</a>
+            <a href="">4</a>
+        </div>-->
+    </div>
+</section>
+<div id="pagination-container0"></div>
+<section class="zone-1">
+    <h2>الأخبار المؤرشفة</h2>
+    <div class="research-subsections archive-box">
+
+            {% for articles in content.archive_articlesType2 %}
+                <div class="subsection">
+                    {% if articles.image %}
+                    <!-- Handle image cases -->
+                    {% if articles.image is string %}
+                        <!-- Single image as string -->
+                        <a href="/article/{{ articles.id }}">
+                            <img src="/static/images/{{ articles.image }}" class="article-image"/>
+                        </a>
+                    {% elif articles.image is iterable and articles.image|length > 0 %}
+                        <!-- Multiple images, take the first one -->
+                        <a href="/article/{{ articles.id }}">
+                            <img src="/static/images/{{ articles.image[0] }}" class="article-image"/>
+                        </a>
+                    {% endif %}
+                    {% elif articles.youtubes %}
+                        <!-- Handle YouTube videos -->
+                        {% set youtube_ids = articles.youtubes.split(',') %}
+                        {% if youtube_ids|length > 0 %}
+                            <a href="/article/{{ articles.id }}" class="img-youtube">
+                                <img src="https://img.youtube.com/vi/{{ youtube_ids[0] }}/0.jpg" class="article-image"/>
+                            </a>
+                        {% endif %}
+                    {% else %}            
+                    <!-- Display default image if no images or YouTube videos are available -->
+                    <a href="/article/{{ articles.id }}">
+                        <img src="/static/images/default-image.jpg" class="article-image"/>
+                    </a>
+                    {% endif %}
+                    <a href="/article/{{articles.id }}">
+                        <h3 class="archive-title">{{ articles.description }}</h3>
+                    </a>
+                    <div class="archive-date">{{ articles.posted_date }}</div>
+                </div>
+            {% endfor %}
+    </div>
+</section>
+<div id="pagination-container1"></div>
+<script type="text/javascript" src="{{ url_for('static', filename='jquery1.12.3.min.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery-migrate-1.3.0.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='jquery.simplePagination.js') }}"></script>
+<script type="text/javascript">
+$('.research-subsections.archive-box').each(function(i){
+    var items = $(this).find(".subsection");
+    var numItems = items.length;
+    var perPage = 8;
+
+    items.slice(perPage).hide();
+
+    $('#pagination-container'+i).pagination({
+        items: numItems,
+        itemsOnPage: perPage,
+        prevText: "&laquo;",
+        nextText: "&raquo;",
+        onPageClick: function (pageNumber) {
+            var showFrom = perPage * (pageNumber - 1);
+            var showTo = showFrom + perPage;
+            items.hide().slice(showFrom, showTo).show();
+        }
+    });
+});
+</script>  
+{% endblock %}

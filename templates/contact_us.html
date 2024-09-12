@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="contact-container">
+    <h2>اتصل بنا</h2>
+    <p>
+        للتواصل مع مركز ذي دوم، يمكنك المراسلة إلينا عبر البريد الإلكتروني: 
+    </p>
+        <a href="mailto:info@the-dome-research.com">info@the-dome-research.com</a>
+        <span>
+        أو الاتصال على: *******
+        </span>
+    <form class="contact-form">
+        <div class="form-group">
+            <label for="name">الاسم</label>
+            <input type="text" id="name" name="name" placeholder="أدخل اسمك">
+        </div>
+        <div class="form-group">
+            <label for="email">البريد الإلكتروني</label>
+            <input type="email" id="email" name="email" placeholder="أدخل بريدك الإلكتروني">
+        </div>
+        <div class="form-group">
+            <label for="message">الرسالة</label>
+            <textarea id="message" name="message" rows="7" placeholder="أدخل رسالتك"></textarea>
+        </div>
+        <button type="submit">إرسال</button>
+    </form>
+</div>
+{% endblock %}

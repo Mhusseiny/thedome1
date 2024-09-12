@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Content</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="manage-page">
+    <div class="container">
+        <h1>إدارة المحتوى</h1>
+
+        <!-- Add New Study or News -->
+        <h2>إضافة محتوى جديد</h2>
+        <form action="{{ url_for('add_content') }}" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="item_type">نوع المحتوى:</label>
+                <select id="item_type" name="item_type" required>
+                    <option value="1">أحدث الأبحاث والدراسات </option>
+                    <option value="2">الأخبار والفعاليات </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="item_status">Status :</label>
+                <select id="item_status" name="item_status" required>
+                    <option value="1">Published</option>
+                    <option value="2">Archived</option>                    
+                    <option value="0">Un-Publish</option>                  
+                </select>
+            </div>
+            
+
+            <div class="form-group">
+                <label for="articleDate">Date:</label>
+                <input type="text" id="articleDate" name="articleDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="title">عنوان المحتوى:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">صورة المحتوى:</label>
+                <input type="file" id="images" name="images" >
+            </div>
+
+            <div class="form-group">
+                <label for="description">وصف المحتوى:</label>                
+                <textarea id="description" name="description" rows="2" ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="content">النص الكامل للمحتوى:</label>
+                <textarea id="content" name="content" rows="10" ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-add">نشر المحتوى</button>
+        </form>
+        <!-- Published Articles -->
+        <div class="content-section">
+            {% set total_count = content.article_published | length %}
+            
+            <h2 class="h2-content-section">Published Article <span class="spanAllnum">({{ total_count }})</span></h2>
+            {% for articles in content.article_published %}     
+            {% set element_count = loop.index %}
+     
+                <div class="content-item">
+                    <span class="content-item-num">{{ element_count }}</span>
+                    {% if articles.image is string %}
+                    <img src="/static/images/{{ articles.image }}" class="manage-image"/>
+                   {% elif articles.image is iterable %}
+                       {% if articles.image|length > 0 %}
+                           <img src="/static/images/{{ articles.image[0] }}" class="manage-image"/>
+                       {% endif %}
+                   {% endif %}                        
+                    <h3><a target="_new" href="/article/{{ articles.id }}">{{ articles.title }}</a></h3>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Archived Articles -->
+        <div class="content-section">
+            {% set total_count = content.article_archived | length %}
+            <h2 class="h2-content-section">Archived Article <span class="spanAllnum">({{ total_count }})</span></h2>
+            {% for articles in content.article_archived %}
+            {% set element_count = loop.index %}
+            <div class="content-item">
+                <span class="content-item-num">{{ element_count }}</span>
+                {% if articles.image is string %}
+                <img src="/static/images/{{ articles.image }}" class="manage-image"/>
+               {% elif articles.image is iterable %}
+                   {% if articles.image|length > 0 %}
+                       <img src="/static/images/{{ articles.image[0] }}" class="manage-image"/>
+                   {% endif %}
+               {% endif %}                        
+                <h3><a target="_new" href="/article/{{ articles.id }}">{{ articles.title }}</a></h3>
+            </div>
+            {% endfor %}
+        </div>
+
+                <!-- UnPublished Articles -->
+                <div class="content-section">
+                    {% set total_count = content.article_unpublished | length %}
+                    <h2 class="h2-content-section">UnPublished Article <span class="spanAllnum">({{ total_count }})</span></h2>
+                    {% for articles in content.article_unpublished %}
+                    {% set element_count = loop.index %}
+                        <div class="content-item">
+                            <span class="content-item-num">{{ element_count }}</span>
+                            {% if articles.image is string %}
+                            <img src="/static/images/{{ articles.image }}" class="manage-image"/>
+                           {% elif articles.image is iterable %}
+                               {% if articles.image|length > 0 %}
+                                   <img src="/static/images/{{ articles.image[0] }}" class="manage-image"/>
+                               {% endif %}
+                           {% endif %}                       
+                            <h3>{{ articles.title }}</h3>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Deleted Articles -->
+                <div class="content-section">
+                    {% set total_count = content.article_deleted | length %}
+                    <h2 class="h2-content-section">Deleted Article <span class="spanAllnum">({{ total_count }})</span></h2>
+                    {% for articles in content.article_deleted %}
+                    {% set element_count = loop.index %}
+                        <div class="content-item">
+                            <span class="content-item-num">{{ element_count }}</span>
+                            {% if articles.image is string %}
+                             <img src="/static/images/{{ articles.image }}" class="manage-image"/>
+                            {% elif articles.image is iterable %}
+                                {% if articles.image|length > 0 %}
+                                    <img src="/static/images/{{ articles.image[0] }}" class="manage-image"/>
+                                {% endif %}
+                            {% endif %}               
+                            <h3>{{ articles.title }}</h3>
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+        </div>
+    </div>
+
+   
+</body>
+</html>

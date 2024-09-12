@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <title>{{ title }} - ذي دوم</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Link to the CSS file -->
+    
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon/favicon.ico') }}" type="image/x-icon" />
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon/favicon.ico') }}" type="image/x-icon" />
+    <meta http-equiv="Content-Language" content="ar-kw" />
+    <link rel="canonical" itemprop="url" href="{{ url_for('index') }}" />
+    <meta property="og:title" content="{{ title }}" />
+    <meta property="og:url" content="{{ url_for('index') }}/" />
+    <meta property="og:site_name" content="{{ url_for('index') }}" />
+    <meta property="og:type" content="Homepage" />
+    <meta property="og:description" content="{{ description }}" />
+    <meta property="og:image" content="{{ url_for('static', filename='images/the_dome_w_t.jpg') }}" />
+    <meta property="og:image:width" content="300" />
+    <meta name="twitter:image:src" content="{{ url_for('static', filename='images/the_dome_w_t.jpg') }}" />
+    <meta itemprop="thumbnailUrl" content="{{ url_for('static', filename='images/the_dome_w_t.jpg') }}" />
+    <meta itemprop="pageType" content="article" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:description" content="{{ description }}" />
+    <meta name="twitter:site" content="@the_Dome" />
+    <meta name="twitter:creator" content="@the_Dome" />
+    <meta name="twitter:title" content="{{ title }}" />
+    <meta name="twitter:domain" content="URL" />
+    <meta name="description" content="{{ description }}" />
+    <meta name="keywords" content="ذي دوم, مركز الأبحاث والدراسات, ذي دوم مركز الأبحاث والدراسات" />
+    <meta name="PageType" content="Homepage" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='images/favicon/site.webmanifest') }}">
+    <link rel="mask-icon" href="{{ url_for('static', filename='images/favicon/safari-pinned-tab.svg') }}" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body class="MainBody">
+    <header class="headerDiv">
+        <div class="logo">
+            <a href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/the_dome.png') }}" alt="The Dome logo"/>
+            </a>
+                <div>
+                    <a href="{{ url_for('index') }}"><h1>ذي دوم</h1></a>
+                    <p>مركز الأبحاث والدراسات</p>
+                </div>
+            
+        </div>
+        <nav class="menutop cl-effect-8">
+            <ul>
+                <li><a href="{{ url_for('index') }}" class="{{ 'active' if current_page == 'index' else '' }}">الرئيسية</a></li>
+                <li><a href="{{ url_for('goals') }}" class="{{ 'active' if current_page == 'goals' else '' }}">عن المركز</a></li>
+                <li><a href="{{ url_for('archive') }}" class="{{ 'active' if current_page == 'archive' else '' }}">الأرشيف</a></li>
+                <li><a href="{{ url_for('contact_us') }}" class="{{ 'active' if current_page == 'contact_us' else '' }}">اتصل بنا</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="mobileMenu">
+        <input type="checkbox" id="myInputMenu">
+        <label class="lblMenu" for="myInputMenu">
+            <span class="bar top"></span>
+            <span class="bar middle"></span>
+            <span class="bar bottom"></span>
+          </label>
+        <aside>
+          
+          <div class="aside-section aside-right">
+            <ul class="aside-list">
+                <li><a href="{{ url_for('index') }}" class="aside-anchor {{ 'active' if current_page == 'index' else '' }}">الرئيسية</a></li>
+                <li><a href="{{ url_for('goals') }}" class="aside-anchor {{ 'active' if current_page == 'goals' else '' }}">عن المركز</a></li>
+                <li><a href="{{ url_for('archive') }}" class="aside-anchor {{ 'active' if current_page == 'archive' else '' }}">الأرشيف</a></li>
+                <li><a href="{{ url_for('contact_us') }}" class="aside-anchor {{ 'active' if current_page == 'contact_us' else '' }}">اتصل بنا</a></li>
+            </ul>
+          </div>
+        </aside>
+    </div>
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer>
+        <p>&copy; 2024 <a href="{{ url_for('index') }}">ذي دوم</a> - جميع الحقوق محفوظة</p>
+    </footer>
+    <script type="text/javascript">
+        const mDIV = document.querySelector('.headerDiv');
+        const nDIV = document.querySelector('.MainBody');
+        let oDIV; 
+        function updateOffset() {
+            oDIV = mDIV.getBoundingClientRect().top + window.scrollY;
+        }
+        function handleScroll() {
+            if (window.innerWidth > 1100) {
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                if (scrollTop > oDIV) {
+                    mDIV.classList.add('stick');
+                    nDIV.classList.add('stick');
+                } else {
+                    mDIV.classList.remove('stick');
+                    nDIV.classList.remove('stick');
+                }
+            } else {
+                mDIV.classList.remove('stick');
+                nDIV.classList.remove('stick');
+            }
+        }
+        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('resize', () => {
+            updateOffset();
+            handleScroll();
+        });
+        updateOffset();
+        handleScroll();
+    </script>
+</body>
+</html>

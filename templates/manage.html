@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Content</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="manage-page">
+    <div class="container">
+        <a class="logout-box" href="{{ url_for('logout') }}"><span class="logout-icon">&#10060;</span></a>
+        <h1>إدارة المحتوى</h1>
+
+        <!-- Add New Study or News -->
+        <h2 class="h2_form">إضافة محتوى جديد</h2>
+        <form action="{{ url_for('add_content') }}" id="myForm" method="POST" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="item_type">نوع المحتوى:</label>
+                <select id="item_type" name="item_type" required>
+                    <option value="1">أحدث الأبحاث والدراسات </option>
+                    <option value="2">الأخبار والفعاليات </option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="item_status" class="w39p">Status :</label>
+                <select id="item_status" name="item_status" required>
+                    <option value="1">Published</option>
+                    <option value="2">Archived</option>                    
+                    <option value="3">Un-Publish</option>                  
+                </select>
+            
+                <label for="articleDate" class="txtCenter">Date:</label>
+                <input type="text" id="articleDate" name="articleDate" onkeypress="return false;" required/>
+                <input id='hfDate' type="hidden" class="hfSelDate"/>
+            </div>
+
+            <div class="form-group">
+                <label for="title">عنوان المحتوى:</label>
+                <input type="text" id="title" name="title" required>
+            </div>
+
+            <div class="form-group">
+                <label for="image">صورة المحتوى:</label>
+                <input type="file" id="images" name="images" multiple>
+            </div>
+            <div class="form-group">
+                <label for="image">معرف اليوتيوب</label>
+                <input type="text" id="youtubes" name="youtubes" class="engilshTxt"/>
+                <span class="fixIDS">تصحيح المعرف</span>
+            </div>
+            <i class="hintbox">youtube id,id,...</i>
+            <div class="form-group">
+                <label for="description">وصف المحتوى:</label>                
+                <textarea id="description" name="description" rows="2" ></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="content">النص الكامل للمحتوى:</label>
+                <textarea id="content" name="content" rows="10" ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-add">نشر المحتوى</button>
+        </form>
+        <!-- Published Articles -->
+        <div class="content-section">
+            {% set total_count = content.article_published | length %}
+            
+            <h2 class="h2-content-section">Published Article <span class="spanAllnum">({{ total_count }})</span></h2>
+            {% for articles in content.article_published %}     
+            {% set element_count = loop.index %}
+     
+                <div class="content-item">
+                    <span class="content-item-num">{{ element_count }}</span>
+                    <div class="imgBox">
+                        {% if articles.image %}
+                            <!-- Handle image cases -->
+                            {% if articles.image is string %}
+                                <!-- Single image as string -->
+                                <a href="/article/{{ articles.id }}">
+                                    <img src="/static/images/{{ articles.image }}" class="manage-image"/>
+                                </a>
+                            {% elif articles.image is iterable and articles.image|length > 0 %}
+                                <!-- Multiple images, take the first one -->
+                                <a href="/article/{{ articles.id }}">
+                                    <img src="/static/images/{{ articles.image[0] }}" class="manage-image"/>
+                                </a>
+                            {% endif %}
+                        {% elif articles.youtubes %}
+                            <!-- Handle YouTube videos -->
+                            {% set youtube_ids = articles.youtubes.split(',') %}
+                            {% if youtube_ids|length > 0 %}
+                                <a href="/article/{{ articles.id }}" class="img-youtube">
+                                    <img src="https://img.youtube.com/vi/{{ youtube_ids[0] }}/0.jpg" class="manage-image"/>
+                                </a>
+                            {% endif %}
+                        {% else %}            
+                        <!-- Display default image if no images or YouTube videos are available -->
+                        <a href="/article/{{ articles.id }}">
+                            <img src="/static/images/default-image.jpg" class="manage-image"/>
+                        </a>
+                        {% endif %}
+                    </div>                      
+                    <h3><a target="_new" href="/article/{{ articles.id }}">{{ articles.title }}</a></h3>
+                    <a class="edit-box" href="{{ url_for('edit_content', item_ID=articles.id) }}"><span class="edit-icon">&#9998;</span></a>
+                    <a class="delete-box"  href="{{ url_for('delete_content', item_ID=articles.id) }}" onclick="return confirm(' you want to delete?');">X</a>
+
+                    <div class="archive-date">{{ articles.posted_date }} |  <span class="arabicFont">{{ products[articles.aType] }}</span></div>
+                    <div class="articleid_box">ID: {{ articles.id }}</div>
+                </div>
+                
+            {% endfor %}
+            <div id="pagination-container0"></div>
+        </div>
+        
+        <!-- Archived Articles -->
+        <div class="content-section">
+            {% set total_count = content.article_archived | length %}
+            <h2 class="h2-content-section">Archived Article <span class="spanAllnum">({{ total_count }})</span></h2>
+            {% for articles in content.article_archived %}
+            {% set element_count = loop.index %}
+            <div class="content-item">
+                <span class="content-item-num">{{ element_count }}</span>
+                <div class="imgBox">
+                    {% if articles.image %}
+                    <!-- Handle image cases -->
+                    {% if articles.image is string %}
+                        <!-- Single image as string -->
+                        <a href="/article/{{ articles.id }}">
+                            <img src="/static/images/{{ articles.image }}" class="manage-image"/>
+                        </a>
+                    {% elif articles.image is iterable and articles.image|length > 0 %}
+                        <!-- Multiple images, take the first one -->
+                        <a href="/article/{{ articles.id }}">
+                            <img src="/static/images/{{ articles.image[0] }}" class="manage-image"/>
+                        </a>
+                    {% endif %}
+                {% elif articles.youtubes %}
+                    <!-- Handle YouTube videos -->
+                    {% set youtube_ids = articles.youtubes.split(',') %}
+                    {% if youtube_ids|length > 0 %}
+                        <a href="/article/{{ articles.id }}" class="img-youtube">
+                            <img src="https://img.youtube.com/vi/{{ youtube_ids[0] }}/0.jpg" class="manage-image"/>
+                        </a>
+                    {% endif %}
+                {% else %}            
+                <!-- Display default image if no images or YouTube videos are available -->
+                <a href="/article/{{ articles.id }}">
+                    <img src="/static/images/default-image.jpg" class="manage-image"/>
+                </a>
+                {% endif %}
+               </div>                     
+                <h3><a target="_new" href="/article/{{ articles.id }}">{{ articles.title }}</a></h3>
+                <a class="edit-box" href="{{ url_for('edit_content', item_ID=articles.id) }}"><span class="edit-icon">&#9998;</span></a>
+                <a class="delete-box"  href="{{ url_for('delete_content', item_ID=articles.id) }}" onclick="return confirm(' you want to delete?');">X</a>               
+                <div class="archive-date">{{ articles.posted_date }} |  <span class="arabicFont">{{ products[articles.aType] }}</span></div>
+                <div class="articleid_box">ID: {{ articles.id }}</div>
+            </div>
+            {% endfor %}
+            <div id="pagination-container1"></div>
+        </div>
+        
+                <!-- UnPublished Articles -->
+                <div class="content-section">
+                    {% set total_count = content.article_unpublished | length %}
+                    <h2 class="h2-content-section">UnPublished Article <span class="spanAllnum">({{ total_count }})</span></h2>
+                    {% for articles in content.article_unpublished %}
+                    {% set element_count = loop.index %}
+                        <div class="content-item">
+                            <span class="content-item-num">{{ element_count }}</span>
+                            <div class="imgBox">
+                                {% if articles.image %}
+                                <!-- Handle image cases -->
+                                {% if articles.image is string %}
+                                    <!-- Single image as string -->
+                                    <a href="/article/{{ articles.id }}">
+                                        <img src="/static/images/{{ articles.image }}" class="manage-image"/>
+                                    </a>
+                                {% elif articles.image is iterable and articles.image|length > 0 %}
+                                    <!-- Multiple images, take the first one -->
+                                    <a href="/article/{{ articles.id }}">
+                                        <img src="/static/images/{{ articles.image[0] }}" class="manage-image"/>
+                                    </a>
+                                {% endif %}
+                            {% elif articles.youtubes %}
+                                <!-- Handle YouTube videos -->
+                                {% set youtube_ids = articles.youtubes.split(',') %}
+                                {% if youtube_ids|length > 0 %}
+                                    <a href="/article/{{ articles.id }}" class="img-youtube">
+                                        <img src="https://img.youtube.com/vi/{{ youtube_ids[0] }}/0.jpg" class="manage-image"/>
+                                    </a>
+                                {% endif %}
+                            {% else %}            
+                            <!-- Display default image if no images or YouTube videos are available -->
+                            <a href="/article/{{ articles.id }}">
+                                <img src="/static/images/default-image.jpg" class="manage-image"/>
+                            </a>
+                            {% endif %}
+                            </div>                     
+                            <h3>{{ articles.title }}</h3>
+                            <a class="edit-box" href="{{ url_for('edit_content', item_ID=articles.id) }}"><span class="edit-icon">&#9998;</span></a>
+                            <a class="delete-box"  href="{{ url_for('delete_content', item_ID=articles.id) }}" onclick="return confirm(' you want to delete?');">X</a>
+                            <div class="archive-date">{{ articles.posted_date }} |  <span class="arabicFont">{{ products[articles.aType] }}</span></div>
+                            <div class="articleid_box">ID: {{ articles.id }}</div>
+                        </div>
+                    {% endfor %}
+                    <div id="pagination-container2"></div>
+                </div>
+                
+        </div>
+    </div>
+
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery1.12.3.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='jquery-migrate-1.3.0.min.js') }}"></script>
+    <!-- collapse -->
+    <script type="text/javascript">
+    $('.h2_form').on('click', function(e) {
+        $('#myForm').toggleClass("show"); //you can list several class names 
+        e.preventDefault();
+    });
+    $('.manage-page .fixIDS').on('click', function(e) {
+    e.preventDefault();
+    
+    var inputVal = $('.manage-page #youtubes').val();
+    var results = [];
+    
+    if (inputVal.indexOf(',') !== -1) {
+        var values = inputVal.split(',').map(function(value) {
+            return value.trim();
+        });
+        values.forEach(function(value) {
+            if (value.indexOf('?') !== -1) {
+                var parts = value.split('?');
+                results.push(parts[0].trim());
+            } else if (value.indexOf('&') !== -1) {
+                var parts = value.split('&');
+                results.push(parts[0].trim());
+            } else {
+                results.push(value);
+            }
+        });
+        
+        $('.manage-page #youtubes').val(results.join(','));
+    } else {
+        // If no comma, process the single value
+        if (inputVal.indexOf('?') !== -1) {
+            var parts = inputVal.split('?');
+            $('.manage-page #youtubes').val(parts[0].trim());
+        } else if (inputVal.indexOf('&') !== -1) {
+            var parts = inputVal.split('&');
+            $('.manage-page #youtubes').val(parts[0].trim());
+        }
+    }
+});
+    </script>
+   
+    <!-- TinyMce WYSIWG editor -->
+    <script src="{{ url_for('static', filename='tinymce_4_5_7/jquery.tinymce.min.js') }}"></script>
+    <script type="text/javascript">
+        //* TinyMce
+        gebo_wysiwg = {
+            init: function () {
+                $('textarea#content').tinymce({
+                    body_class: 'bodyTiny',
+                    // Location of TinyMCE script
+                    script_url: '/static/tinymce_4_5_7/tinymce.min.js',
+                    verify_html: false,
+                    valid_children: "+a[div|h1|h2|h3|h4|h5|h6|p|#text]",
+                    force_br_newlines: true,
+                    force_p_newlines: false,
+                    forced_root_block: false,
+                    // General options
+                    //theme: "modern",
+                    //plugins: "autoresize,table,image,link,emoticons,preview,media,contextmenu,paste,fullscreen,noneditable,template,advlist",                   
+                    plugins: [" autoresize advlist autolink autosave link image lists charmap template  hr anchor pagebreak ", "searchreplace  visualblocks  code   media nonbreaking", "table directionality  template textcolor paste  textcolor  textpattern image"],
+
+                    style_formats: [{
+                        title: 'Bold text',
+                        inline: 'span',
+                        classes: 'bold'
+                    }, {
+                        title: 'Red text',
+                        inline: 'span',
+                        classes: 'redColor'
+                    }, {
+                        title: 'Blue text',
+                        inline: 'span',
+                        classes: 'blueColor'
+                    }, {
+                        title: 'h2 header',
+                        inline: 'span',
+                        classes: 'titleone'
+                    }, {
+                        title: 'h3 header',
+                        inline: 'span',
+                        classes: 'titletwo'
+                    }],
+                    templates: [
+                           { title: 'Select a Template', description: '', content: '' },
+                           { title: 'Bullet', description: 'Bullet', content: '<ul class="bullet"><li>ادخل النص هنا</li></ul>' }
+                    ],
+                    content_css: "/static/Tinymcearticle.css"
+                  , toolbar1: "  |  template | styleselect | paste |  link unlink | code | image",
+                    menubar: false,
+                    toolbar_items_size: 'small'
+                    
+
+                });
+            }
+        };
+
+        $(document).ready(function () {
+            gebo_wysiwg.init();
+           
+        });
+    </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='jquery-ui.js') }}"></script>
+    <script type="text/javascript">
+    $("#articleDate").datepicker({
+        disableTouchKeyboard: true,
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: "yy-mm-dd",
+        onSelect: function (dateText, t) {
+            $(this).datepicker("getDate");
+            $('#hfDate').val(dateText);
+            var valselect = $('#hfDate').val();
+            var valselectt = dateText;
+            valselectt = valselectt.replace(/-/g, '/');
+        },
+        autoclose: !0
+    });
+</script>
+
+<script type="text/javascript" src="{{ url_for('static', filename='jquery.simplePagination.js') }}"></script>
+<script type="text/javascript">
+$('.content-section').each(function(i){
+    var items = $(this).find(".content-item");
+    var numItems = items.length;
+    var perPage = 4;
+
+    items.slice(perPage).hide();
+
+    $('#pagination-container'+i).pagination({
+        items: numItems,
+        itemsOnPage: perPage,
+        prevText: "&laquo;",
+        nextText: "&raquo;",
+        onPageClick: function (pageNumber) {
+            var showFrom = perPage * (pageNumber - 1);
+            var showTo = showFrom + perPage;
+            items.hide().slice(showFrom, showTo).show();
+        }
+    });
+});
+  
+</script>
+</body>
+</html>
